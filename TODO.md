@@ -1,6 +1,4 @@
-* Create AWS CodeCommit repo
-* Create a private Docker container in standard registry
-* Read up on ECS and setup an ECS
-    - Enable token retrieval from EC2 role
-    - Enable RDS
-* Write a simple backend to fetch courses from S3 and proxy it through
+* Investigate AWS Lambda and API Gateway
+* Create a simple gateway to add entries to a db
+* Create a simple Lambda task to add an entry from S3 to a folder in Dropbox
+* Investigate different options to share course material
