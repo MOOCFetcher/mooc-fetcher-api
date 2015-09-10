@@ -1,0 +1,25 @@
+{
+  "name": "mooc-fetcher-api",
+  "version": "0.0.1",
+  "description": "Web API backend for MOOC Fetcher",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "jscs": "jscs -x ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/moocfetcherapi"
+  },
+  "author": "Deepak Jois",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "aws-sdk": "",
+    "babel-eslint": "",
+    "babel-jscs": "",
+    "eslint": "",
+    "eslint-plugin-babel": "",
+    "eslint-plugin-react": "",
+    "jscs": ""
+  }
+}

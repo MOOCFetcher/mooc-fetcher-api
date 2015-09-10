@@ -1,3 +1,4 @@
+* Write README
 * Integrate frontend to stub and deploy
 * Connect Stub to a dummy AWS Lambda function
 * Make AWS Lambda function write dummy file to Dropbox
