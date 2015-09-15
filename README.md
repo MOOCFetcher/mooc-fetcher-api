@@ -40,7 +40,7 @@ npm run lint
 npm run jscs
 ```
 
-### Deploying lambda functions
+### Deploying
 Your AWS credentials must have sufficient privileges to do this.
 
 ```
