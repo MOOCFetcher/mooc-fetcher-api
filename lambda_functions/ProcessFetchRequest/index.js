@@ -11,11 +11,11 @@ exports.handler = function(event, context) {
   sns.publish({
     TopicArn: 'arn:aws:sns:us-east-1:720053052670:mooc-fetcher-requests',
     Message: '{}'
-  }, function(err, data) {
+  }, function(err) {
     if (err) {
       context.fail(err)
       return
     }
-    context.succeed(data)
+    context.succeed({success: true})
   })
 }
