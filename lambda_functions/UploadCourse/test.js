@@ -1,7 +1,7 @@
 var util = require('util')
 var lambda = require('./index.js').handler
 
-lambda(require('./testdata/test_event.json'), {
+lambda(require('./test_sns_event.json'), {
   fail: function(error) {
     console.log('Failed:', error)
     process.exit(1)
