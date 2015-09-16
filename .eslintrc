@@ -10,8 +10,10 @@
     "env": {
         "node": true,
         "es6": true,
+        "jasmine": true
     },
     "globals": {
+        "jest": false
     },
     "rules": {
             "no-console":0,
