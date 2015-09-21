@@ -20,6 +20,7 @@
     "gulp-awslambda" : "",
     "jest-cli": "",
     "babel-jscs" : "",
+    "validate.js": "",
     "gulp-zip" : ""
   },
   "jest": {
