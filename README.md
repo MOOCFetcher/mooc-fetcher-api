@@ -11,7 +11,7 @@ Lambda functions for the MOOC Fetcher API Backend.
 ### Downloading dependencies
 * Run `npm install`
 
-### Testing lambda functions locally (end-to-end)
+## Testing locally (end-to-end)
 
 ```
 node lambda_functions/ProcessFetchRequest/test.js
@@ -19,7 +19,7 @@ node lambda_functions/ProcessFetchRequest/test.js
 
 This will run an end-to-end test of your lambda function using a dummy context and a dummy event.
 
-### Code style
+## Code style
 Running ESLint:
 
 ```
@@ -40,7 +40,7 @@ npm run lint
 npm run jscs
 ```
 
-### Deploying
+## Deploying
 Your AWS credentials must have sufficient privileges to do this.
 
 ```
