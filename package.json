@@ -7,7 +7,6 @@
   "main" : "index.js",
   "license" : "UNLICENSED",
   "devDependencies" : {
-    "eslint-plugin-react" : "",
     "gulp-util" : "",
     "jscs" : "",
     "eslint-plugin-babel" : "",
@@ -41,7 +40,7 @@
     ]
   },
   "scripts" : {
-    "lint" : "eslint .",
+    "lint" : "eslint --fix .",
     "jscs" : "jscs -x ."
   },
   "version" : "0.0.1",
