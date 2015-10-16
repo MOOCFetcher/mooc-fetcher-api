@@ -1,32 +1,37 @@
 {
-  "repository" : {
-    "url" : "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/moocfetcherapi",
-    "type" : "git"
+  "repository": {
+    "url": "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/moocfetcherapi",
+    "type": "git"
   },
-  "author" : "Deepak Jois",
-  "main" : "index.js",
-  "license" : "UNLICENSED",
-  "devDependencies" : {
-    "gulp-util" : "",
-    "jscs" : "",
-    "eslint-plugin-babel" : "",
-    "eslint" : "",
-    "aws-sdk" : "",
-    "babel-eslint" : "",
+  "author": "Deepak Jois",
+  "main": "index.js",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "aws-sdk": "",
+    "babel-eslint": "",
     "babel-jest": "",
-    "require-dir" : "",
-    "gulp" : "",
-    "gulp-awslambda" : "",
+    "babel-jscs": "",
+    "babel-loader": "",
+    "eslint": "",
+    "eslint-plugin-babel": "",
+    "gulp": "",
+    "gulp-awslambda": "",
+    "gulp-util": "",
+    "gulp-zip": "",
     "jest-cli": "",
-    "babel-jscs" : "",
+    "jscs": "",
+    "json-loader": "",
+    "require-dir": "",
     "validate.js": "",
-    "gulp-zip" : ""
+    "lodash": "",
+    "async": "",
+    "request-json": ""
   },
   "jest": {
     "verbose": true,
     "noHighlight": true,
     "scriptPreprocessor": "node_modules/babel-jest",
-     "testPathDirs": [
+    "testPathDirs": [
       "<rootDir>/lambda_functions"
     ],
     "testFileExtensions": [
@@ -39,11 +44,11 @@
       "json"
     ]
   },
-  "scripts" : {
-    "lint" : "eslint --fix .",
-    "jscs" : "jscs -x ."
+  "scripts": {
+    "lint": "eslint --fix .",
+    "jscs": "jscs -x ."
   },
-  "version" : "0.0.1",
-  "name" : "mooc-fetcher-api",
-  "description" : "Web API backend for MOOC Fetcher"
+  "version": "0.0.1",
+  "name": "mooc-fetcher-api",
+  "description": "Web API backend for MOOC Fetcher"
 }
