@@ -1,9 +1,16 @@
+/**
+ *
+ *
+ *
+ *
+ **/
 import AWS from 'aws-sdk'
 import request from 'request-json'
 import _ from 'lodash'
 import async from 'async'
 import fs from 'fs'
 import util from 'util'
+import moment from 'moment'
 
 const S3_BUCKET = 'moocfetcher'
 const CACHED_ONDEMAND_LAUNCHED_KEY = 'coursera/ondemand/launched.json'
@@ -124,17 +131,25 @@ exports.handler = function(event, context) {
   }
 
   function saveUpdatedCoursesToS3({cachedOnDemand, cachedOnDemandLaunched}, callback) {
-    // TODO write to S3
-    fs.writeFileSync('fixtures/all_ondemand_new.json', JSON.stringify({courses: cachedOnDemand}, 2, 2))
-    fs.writeFileSync('fixtures/launched_new.json', JSON.stringify({courses: cachedOnDemandLaunched}, 2, 2))
-    callback(null)
+    async.series([
+      (cb) => s3Client.copyObject({Bucket: S3_BUCKET, CopySource: util.format('%s/%s', S3_BUCKET, CACHED_ONDEMAND_KEY), Key: util.format('%s-%s.json', CACHED_ONDEMAND_KEY.slice(0, -5), moment().format('DD-MM-YYYY-HHMM'))}, cb),
+      (cb) => s3Client.copyObject({Bucket: S3_BUCKET, CopySource: util.format('%s/%s', S3_BUCKET, CACHED_ONDEMAND_LAUNCHED_KEY), Key: util.format('%s-%s.json', CACHED_ONDEMAND_LAUNCHED_KEY.slice(0, -5), moment().format('DD-MM-YYYY-HHMM'))}, cb),
+      (cb) => s3Client.putObject({Bucket: S3_BUCKET, Key: CACHED_ONDEMAND_KEY, Body: JSON.stringify({courses: cachedOnDemand})}, cb),
+      (cb) => s3Client.putObject({Bucket: S3_BUCKET, Key: CACHED_ONDEMAND_LAUNCHED_KEY, Body: JSON.stringify({courses: cachedOnDemandLaunched})}, cb)
+    ], function(err, result) {
+      if (err) {
+        callback(err)
+      } else {
+        callback(null, result)
+      }
+    })
   }
 
-  function updateContext(err) {
+  function updateContext(err, result) {
     if (err) {
       context.fail(err)
     } else {
-      context.succeed()
+      context.succeed(result)
     }
   }
 

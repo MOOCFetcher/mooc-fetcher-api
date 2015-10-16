@@ -24,6 +24,7 @@
     "require-dir": "",
     "validate.js": "",
     "lodash": "",
+    "moment": "",
     "async": "",
     "request-json": ""
   },
