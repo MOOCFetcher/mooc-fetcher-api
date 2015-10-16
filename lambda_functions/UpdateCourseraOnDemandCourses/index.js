@@ -1,9 +1,24 @@
-/**
+/* Lambda function to query the Coursera API and pull the latest OnDemand
+ * courses.
  *
+ * This function does the following:
  *
+ * - Queries the Coursera API to retrieve all On Demand courses
  *
+ * - Updates a cached list of On Demand courses on S3. (CACHED_ONDEMAND_KEY)
  *
- **/
+ * - Queries the Coursera API to check if any previously unlaunched On Demand
+ *   courses have been launched, and adds them to the cached list of launched
+ *   On Demand courses. (CACHED_ONDEMAND_LAUNCHED_KEY)
+ *
+ * TESTING
+ * -------
+ * Check the file test-end-to-end.js
+ *
+ * We set a special boolean property `isMock` inside the event object passed into
+ * the handler, which triggers offline behavior at certain places.
+ */
+
 import AWS from 'aws-sdk'
 import request from 'request-json'
 import _ from 'lodash'
@@ -21,7 +36,7 @@ const client = request.createClient('https://www.coursera.org')
 const s3Client = new AWS.S3()
 
 exports.handler = function(event, context) {
-  // Test function
+  // Test function to load courses from a JSON file.
   function loadCoursesFromFile(f) {
     return function(callback) {
       console.log('Fetching courses from file %s…', f)
@@ -29,6 +44,7 @@ exports.handler = function(event, context) {
     }
   }
 
+  // Loads all courses by querying the Coursera API.
   function loadFromCoursera(callback) {
     console.log('Fetching courses from Coursera…')
     client.get(COURSERA_API_COURSES_PATH, function(err, res, body) {
@@ -46,6 +62,7 @@ exports.handler = function(event, context) {
     })
   }
 
+  // Loads a list of cached courses from S3, given the key.
   function loadCoursesFromS3(key) {
     return function(callback) {
       console.log('Fetching courses from S3 key: %s', key)
@@ -60,6 +77,7 @@ exports.handler = function(event, context) {
     }
   }
 
+  // Adds a course to the list of launched courses, if `launchedAt` field is set.
   function updateLaunchStatus({launched, unlaunchedUpdated}, course, callback) {
     client.get(util.format(COURSERA_API_ONDEMAND_PATH, course.slug), function(err, res, body) {
       if (!err) {
@@ -80,11 +98,16 @@ exports.handler = function(event, context) {
     })
   }
 
+  // Mock function that does nothing. (Used instead of `updateLaunchStatus`)
   function updateLaunchStatusMock(newLaunchedCourses, course, callback) {
     // console.log('Checking course: %s', course.slug)
     callback(null, newLaunchedCourses)
   }
 
+  // Compares course IDs from Coursera with the cached copies and performs
+  // updates where necessary. Also iterates through any unlaunched courses
+  // and checks if they have now been launched, and adds them to the
+  // launched list.
   function updateCache({courseraOnDemand, cachedOnDemand, cachedOnDemandLaunched}, callback) {
     let cIds = _.pluck(courseraOnDemand, 'id')
     let odIds = _.pluck(cachedOnDemand, 'id')
@@ -123,6 +146,7 @@ exports.handler = function(event, context) {
       })
   }
 
+  // Test function to save courses to a JSON file.
   function saveUpdatedCoursesToFile({cachedOnDemand, cachedOnDemandLaunched}, callback) {
     console.log('Saving new data…')
     fs.writeFileSync('fixtures/all_ondemand_new.json', JSON.stringify({courses: cachedOnDemand}, 2, 2))
@@ -130,6 +154,7 @@ exports.handler = function(event, context) {
     callback(null)
   }
 
+  // Update cached lists of On Demand Courses, after making a copy of them.
   function saveUpdatedCoursesToS3({cachedOnDemand, cachedOnDemandLaunched}, callback) {
     async.series([
       (cb) => s3Client.copyObject({Bucket: S3_BUCKET, CopySource: util.format('%s/%s', S3_BUCKET, CACHED_ONDEMAND_KEY), Key: util.format('%s-%s.json', CACHED_ONDEMAND_KEY.slice(0, -5), moment().format('DD-MM-YYYY-HHMM'))}, cb),
@@ -145,6 +170,7 @@ exports.handler = function(event, context) {
     })
   }
 
+  // Updates AWS Lambda context after checking the final results.
   function updateContext(err, result) {
     if (err) {
       context.fail(err)
@@ -153,6 +179,7 @@ exports.handler = function(event, context) {
     }
   }
 
+  // Collect the current course lists and trigger update processing.
   function processCourses(err, [courseraAll, cachedOnDemand, cachedOnDemandLaunched]) {
     let courseraOnDemand = _.filter(courseraAll, (c) => c.courseType === 'v2.ondemand')
 
@@ -167,6 +194,7 @@ exports.handler = function(event, context) {
     }
   }
 
+  // Load courses from S3 and Coursera (or test fixtures, if isMock is set)
   async.parallel(
     event.isMock ? [
       loadCoursesFromFile('fixtures/all.json'),
