@@ -14,7 +14,7 @@ Lambda functions for the MOOC Fetcher API Backend.
 ## Testing locally (end-to-end)
 
 ```
-node lambda_functions/ProcessFetchRequest/test.js
+node lambda_functions/ProcessFetchRequest/end_to_end_test.js
 ```
 
 This will run an end-to-end test of your lambda function using a dummy context and a dummy event.
@@ -29,7 +29,7 @@ npm run lint
 Running JSCS:
 
 ```
-npm run jscs
+./node_modules/bin/jscs -x <path>
 ```
 
 You can also add the following pre-commit hook (`.git/hooks/precommit`) to your git config:
@@ -37,14 +37,21 @@ You can also add the following pre-commit hook (`.git/hooks/precommit`) to your 
 ```
 #!/bin/sh
 npm run lint
-npm run jscs
 ```
 
-## Deploying
-Your AWS credentials must have sufficient privileges to do this.
+## Building and Deploying
+
+You can build a lambda function (for e.g. `ProcessFetchRequest` using:
 
 ```
-gulp lambdaProcessFetchRequest
+gulp ProcessFetchRequest:build
 ```
 
-This will package the `index.js` file corresponding to the Lambda function _ProcessFetchRequest_ and deploy it using the AWS SDK.
+To copy the lambda function code in a zipped format to AWS, you can do something like the following (your AWS credentials must have sufficient privileges to do this).
+
+```
+gulp ProcessFetchRequest:upload
+```
+
+This will automatically trigger an build, before performing an upload.
+
