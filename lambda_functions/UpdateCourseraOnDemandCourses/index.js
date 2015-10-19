@@ -11,12 +11,14 @@
  *   courses have been launched, and adds them to the cached list of launched
  *   On Demand courses. (CACHED_ONDEMAND_LAUNCHED_KEY)
  *
- * TESTING
- * -------
- * Check the file test-end-to-end.js
+ * - Sends a notification email if any new On Demand courses are added or
+ *   launched
  *
- * We set a special boolean property `isMock` inside the event object passed into
- * the handler, which triggers offline behavior at certain places.
+ * TESTING
+ * ------- Check the file test-end-to-end.js
+ *
+ * We set a special boolean property `isMock` inside the event object passed
+ * into the handler, which triggers offline behavior at certain places.
  */
 
 import AWS from 'aws-sdk'
@@ -34,6 +36,7 @@ const COURSERA_API_COURSES_PATH = '/api/courses.v1'
 const COURSERA_API_ONDEMAND_PATH = '/api/onDemandCourses.v1?&q=slug&slug=%s'
 const client = request.createClient('https://www.coursera.org')
 const s3Client = new AWS.S3()
+const sesClient = new AWS.SES({region: 'us-east-1'})
 
 exports.handler = function(event, context) {
   // Test function to load courses from a JSON file.
@@ -142,20 +145,20 @@ exports.handler = function(event, context) {
 
           cachedOnDemand.splice(idx, 1, c)
         })
-        callback(null, {cachedOnDemand, cachedOnDemandLaunched})
+        callback(null, {cachedOnDemand, cachedOnDemandLaunched, newOnDemand, newLaunched: launched})
       })
   }
 
   // Test function to save courses to a JSON file.
-  function saveUpdatedCoursesToFile({cachedOnDemand, cachedOnDemandLaunched}, callback) {
+  function saveUpdatedCoursesToFile({cachedOnDemand, cachedOnDemandLaunched, newOnDemand, newLaunched}, callback) {
     console.log('Saving new data…')
     fs.writeFileSync('fixtures/all_ondemand_new.json', JSON.stringify({courses: cachedOnDemand}, 2, 2))
     fs.writeFileSync('fixtures/launched_new.json', JSON.stringify({courses: cachedOnDemandLaunched}, 2, 2))
-    callback(null)
+    callback(null, {newOnDemand, newLaunched})
   }
 
   // Update cached lists of On Demand Courses, after making a copy of them.
-  function saveUpdatedCoursesToS3({cachedOnDemand, cachedOnDemandLaunched}, callback) {
+  function saveUpdatedCoursesToS3({cachedOnDemand, cachedOnDemandLaunched, newOnDemand, newLaunched}, callback) {
     async.series([
       (cb) => s3Client.copyObject({Bucket: S3_BUCKET, CopySource: util.format('%s/%s', S3_BUCKET, CACHED_ONDEMAND_KEY), Key: util.format('%s-%s.json', CACHED_ONDEMAND_KEY.slice(0, -5), moment().format('DD-MM-YYYY-HHMM'))}, cb),
       (cb) => s3Client.copyObject({Bucket: S3_BUCKET, CopySource: util.format('%s/%s', S3_BUCKET, CACHED_ONDEMAND_LAUNCHED_KEY), Key: util.format('%s-%s.json', CACHED_ONDEMAND_LAUNCHED_KEY.slice(0, -5), moment().format('DD-MM-YYYY-HHMM'))}, cb),
@@ -165,19 +168,76 @@ exports.handler = function(event, context) {
       if (err) {
         callback(err)
       } else {
-        callback(null, result)
+        callback(null, {s3Responses: result, newOnDemand, newLaunched})
       }
     })
   }
+
+  // Prepares a notification email to send via SES
+  function prepNotificationEmail({newOnDemand, newLaunched}) {
+    let newOnDemandTxt = _.map(newOnDemand, (c) => `- ${c.name} – http://coursera.org/learn/${c.slug}`).join('\n')
+    let newLaunchedTxt = _.map(newLaunched, (c) => `- ${c.name} – http://coursera.org/learn/${c.slug}`).join('\n')
+    let body = ['New On-Demand Courses added:',
+      newOnDemandTxt || 'None',
+      '',
+      'New On-Demand Courses launched:',
+      newLaunchedTxt || 'None'
+    ].join('\n')
+
+      return {
+        Destination: {
+          ToAddresses: ['d@moocfetcher.com']
+        },
+        Message: {
+          Body: {
+            Text: {
+              Data: body,
+              Charset: 'utf-8'
+            }
+          },
+          Subject: {
+            Data: 'Coursera Update',
+            Charset: 'utf-8'
+          }
+        },
+        Source: 'MOOCFetcher <contact@moocfetcher.com>'
+      }
+  }
+
+  // Send a notification email containing newly added and launched courses
+  function sendNotificationEmail({newOnDemand, newLaunched}, cb) {
+    if ((newOnDemand.length === 0) && (newLaunched.length === 0)) {
+      cb()
+      return
+    }
+
+    let params = prepNotificationEmail({newOnDemand, newLaunched})
+
+    if (event.isMock) {
+      console.log('Email:\n%s', params.Message.Body.Text.Data)
+      cb()
+    } else {
+      sesClient.sendEmail(params, (err) => {
+        if (err) {
+          console.log(`Error sending e-mail: ${err}`, err.stack)
+        }
+        cb()
+      })
+    }
+  }
+
 
   // Updates AWS Lambda context after checking the final results.
   function updateContext(err, result) {
     if (err) {
       context.fail(err)
     } else {
-      context.succeed(result)
+      sendNotificationEmail(result, () => {
+        context.succeed(result)
+      })
     }
   }
+
 
   // Collect the current course lists and trigger update processing.
   function processCourses(err, [courseraAll, cachedOnDemand, cachedOnDemandLaunched]) {
