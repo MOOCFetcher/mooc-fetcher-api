@@ -175,12 +175,12 @@ exports.handler = function(event, context) {
 
   // Prepares a notification email to send via SES
   function prepNotificationEmail({newOnDemand, newLaunched}) {
-    let newOnDemandTxt = _.map(newOnDemand, (c) => `- ${c.name} – http://coursera.org/learn/${c.slug}`).join('\n')
-    let newLaunchedTxt = _.map(newLaunched, (c) => `- ${c.name} – http://coursera.org/learn/${c.slug}`).join('\n')
-    let body = ['New On-Demand Courses added:',
+    let newOnDemandTxt = _.map(newOnDemand, (c) => `${c.name}\nhttp://coursera.org/learn/${c.slug}`).join('\n\n')
+    let newLaunchedTxt = _.map(newLaunched, (c) => `${c.name}\nhttp://coursera.org/learn/${c.slug}`).join('\n\n')
+    let body = ['New On-Demand Courses added:\n',
       newOnDemandTxt || 'None',
-      '',
-      'New On-Demand Courses launched:',
+      '\n',
+      'New On-Demand Courses launched:\n',
       newLaunchedTxt || 'None'
     ].join('\n')
 
