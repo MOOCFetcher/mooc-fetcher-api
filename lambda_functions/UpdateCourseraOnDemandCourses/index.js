@@ -175,8 +175,10 @@ exports.handler = function(event, context) {
 
   // Prepares a notification email to send via SES
   function prepNotificationEmail({newOnDemand, newLaunched}) {
-    let newOnDemandTxt = _.map(newOnDemand, (c) => `${c.name}\nhttp://coursera.org/learn/${c.slug}`).join('\n\n')
-    let newLaunchedTxt = _.map(newLaunched, (c) => `${c.name}\nhttp://coursera.org/learn/${c.slug}`).join('\n\n')
+    let newOnDemandTxt = _.map(newOnDemand, (c) => `${c.name}
+http://coursera.org/learn/${c.slug}`).join('\n\n')
+    let newLaunchedTxt = _.map(newLaunched, (c) => `${c.name}
+http://coursera.org/learn/${c.slug}`).join('\n\n')
     let body = ['New On-Demand Courses added:\n',
       newOnDemandTxt || 'None',
       '\n',
@@ -184,7 +186,7 @@ exports.handler = function(event, context) {
       newLaunchedTxt || 'None'
     ].join('\n')
 
-      return {
+    return {
         Destination: {
           ToAddresses: ['d@moocfetcher.com']
         },
@@ -226,7 +228,6 @@ exports.handler = function(event, context) {
     }
   }
 
-
   // Updates AWS Lambda context after checking the final results.
   function updateContext(err, result) {
     if (err) {
@@ -237,7 +238,6 @@ exports.handler = function(event, context) {
       })
     }
   }
-
 
   // Collect the current course lists and trigger update processing.
   function processCourses(err, [courseraAll, cachedOnDemand, cachedOnDemandLaunched]) {

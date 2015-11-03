@@ -1,6 +1,5 @@
 import validate from 'validate.js'
 
-
 let constraints = {
   course: {
     presence: true
