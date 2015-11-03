@@ -43,9 +43,14 @@
       "es6",
       "js",
       "json"
-    ]
+    ],
+    "unmockedModulePathPatterns": [
+      "/node_modules/lodash",
+      "/node_modules/validate.js"
+    ]    
   },
   "scripts": {
+    "test": "BABEL_JEST_STAGE=0 jest",
     "lint": "eslint --fix .",
     "jscs": "jscs -x ."
   },
