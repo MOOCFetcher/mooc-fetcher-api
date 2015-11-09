@@ -1,6 +1,6 @@
 {
   "repository": {
-    "url": "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/moocfetcherapi",
+    "url": "https://github.com/MOOCFetcher/mooc-fetcher-api.git",
     "type": "git"
   },
   "author": "Deepak Jois",
@@ -10,7 +10,7 @@
     "aws-sdk": "",
     "babel-core": "",
     "babel-preset-es2015": "",
-    "babel-preset-stage0": "",
+    "babel-preset-stage-0": "",
     "babel-eslint": "",
     "babel-jest": "",
     "babel-jscs": "",
