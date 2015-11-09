@@ -18,7 +18,7 @@ module.exports = {
   },
   module: {
     loaders: [{
-      loader: 'babel?stage=0',
+      loader: 'babel',
       exclude: /(node_modules|bower_components)/
     },
     {

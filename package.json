@@ -8,6 +8,9 @@
   "license": "UNLICENSED",
   "devDependencies": {
     "aws-sdk": "",
+    "babel-core": "",
+    "babel-preset-es2015": "",
+    "babel-preset-stage0": "",
     "babel-eslint": "",
     "babel-jest": "",
     "babel-jscs": "",
@@ -25,6 +28,7 @@
     "validate.js": "",
     "lodash": "",
     "moment": "",
+    "mustache": "",
     "async": "",
     "request-json": ""
   },
