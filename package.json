@@ -13,7 +13,6 @@
     "babel-preset-stage-0": "",
     "babel-eslint": "",
     "babel-jest": "",
-    "babel-jscs": "",
     "babel-loader": "",
     "eslint": "",
     "eslint-plugin-babel": "",
@@ -22,7 +21,6 @@
     "gulp-util": "",
     "gulp-zip": "",
     "jest-cli": "",
-    "jscs": "",
     "json-loader": "",
     "require-dir": "",
     "validate.js": "",
@@ -30,7 +28,8 @@
     "moment": "",
     "mustache": "",
     "async": "",
-    "request-json": ""
+    "request-json": "",
+    "webpack": ""
   },
   "jest": {
     "verbose": true,
@@ -55,8 +54,7 @@
   },
   "scripts": {
     "test": "BABEL_JEST_STAGE=0 jest",
-    "lint": "eslint --fix .",
-    "jscs": "jscs -x ."
+    "lint": "eslint --fix ."
   },
   "version": "0.0.1",
   "name": "mooc-fetcher-api",
