@@ -32,6 +32,7 @@
     "webpack": ""
   },
   "jest": {
+    "testRunner": "<rootDir>/node_modules/jest-cli/src/testRunners/jasmine/jasmine2.js",
     "verbose": true,
     "noHighlight": true,
     "scriptPreprocessor": "node_modules/babel-jest",
@@ -53,7 +54,7 @@
     ]    
   },
   "scripts": {
-    "test": "BABEL_JEST_STAGE=0 jest",
+    "test": "jest",
     "lint": "eslint --fix ."
   },
   "version": "0.0.1",

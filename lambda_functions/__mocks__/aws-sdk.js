@@ -1,6 +1,10 @@
 var snsPublish = jest.genMockFn().mockImplementation(function(data, callback) {
   callback(null, {})
+}),
+sesSendEmail = jest.genMockFn().mockImplementation(function(data, callback) {
+  callback(null, {})
 })
+
 
 var AWS = {
   config: {
@@ -9,6 +13,11 @@ var AWS = {
   SNS: function() {
     return {
       publish: snsPublish
+    }
+  },
+  SES: function() {
+    return {
+      sendEmail: sesSendEmail
     }
   }
 }

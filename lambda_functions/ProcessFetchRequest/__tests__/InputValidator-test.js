@@ -1,4 +1,4 @@
-jest.dontMock('../InputValidator.js')
+jest.autoMockOff()
 let validate = require('../InputValidator.js').validate
 let omit = require('lodash/object/omit')
 
@@ -72,6 +72,7 @@ describe('InputValidator', function() {
     beforeEach(() => {
       inputs = Object.assign({}, validInputs, validMailingAddressInputs)
       inputs.deliverymethod = 'usb-drive'
+      delete inputs.token
     })
 
     let mailingAddressFields = [
