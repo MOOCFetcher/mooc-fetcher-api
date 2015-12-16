@@ -1,21 +1,15 @@
-var AWS = require('aws-sdk')
+import AWS from 'aws-sdk'
+import InputValidator from './InputValidator'
 
 AWS.config.region = 'us-east-1'
 
 exports.handler = function(event, context) {
-  console.log('CONTEXT:\n', context)
-  console.log('EVENT:\n', event)
+  var errors = InputValidator.validate(event)
 
-  var sns = new AWS.SNS()
+  if (errors) {
+    context.fail(errors)
+    return
+  }
 
-  sns.publish({
-    TopicArn: 'arn:aws:sns:us-east-1:720053052670:mooc-fetcher-requests',
-    Message: '{}'
-  }, function(err) {
-    if (err) {
-      context.fail(err)
-      return
-    }
-    context.succeed({success: true})
-  })
+  context.succeed({success: true})
 }
