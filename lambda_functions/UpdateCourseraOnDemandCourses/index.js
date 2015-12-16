@@ -15,7 +15,8 @@
  *   launched
  *
  * TESTING
- * ------- Check the file test-end-to-end.js
+ * -------
+ * Check the file test-end-to-end.js.
  *
  * We set a special boolean property `isMock` inside the event object passed
  * into the handler, which triggers offline behavior at certain places.
