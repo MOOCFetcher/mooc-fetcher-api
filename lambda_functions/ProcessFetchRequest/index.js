@@ -20,7 +20,7 @@ exports.handler = function(event, context) {
     ses = new AWS.SES()
 
   ses.sendEmail({
-    Source: 'contact@moocfetcher.com',
+    Source: 'MOOC Fetcher Support <contact@moocfetcher.com>',
     Destination: {
       ToAddresses: [event.email]
     },
