@@ -3,7 +3,7 @@ let capitalize = require('lodash/string/capitalize')
 
 let template = `Dear {{name}},
 
-Your request to download course materials for course {{course}} has been received and currently being processed. You will receive another email when your request has been processed.
+Your request to download course materials for course {{coursename}} has been received and currently being processed. You will receive another email when your request has been processed.
 
 Course Name: {{coursename}}
 
