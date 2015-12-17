@@ -5,7 +5,7 @@ let template = `Dear {{name}},
 
 Your request to download course materials for course {{course}} has been received and currently being processed. You will receive another email when your request has been processed.
 
-Course Name: {{course}}
+Course Name: {{coursename}}
 
 Delivery Method: {{getDeliveryMethod}}
 
