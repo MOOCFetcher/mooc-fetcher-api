@@ -7,13 +7,15 @@
   "main": "index.js",
   "license": "UNLICENSED",
   "devDependencies": {
+    "async": "",
     "aws-sdk": "",
     "babel-core": "",
-    "babel-preset-es2015": "",
-    "babel-preset-stage-0": "",
     "babel-eslint": "",
     "babel-jest": "",
     "babel-loader": "",
+    "babel-plugin-transform-object-assign": "^6.3.13",
+    "babel-preset-es2015": "",
+    "babel-preset-stage-0": "",
     "eslint": "",
     "eslint-plugin-babel": "",
     "gulp": "",
@@ -22,13 +24,12 @@
     "gulp-zip": "",
     "jest-cli": "",
     "json-loader": "",
-    "require-dir": "",
-    "validate.js": "",
     "lodash": "",
     "moment": "",
     "mustache": "",
-    "async": "",
     "request-json": "",
+    "require-dir": "",
+    "validate.js": "",
     "webpack": ""
   },
   "jest": {
@@ -51,7 +52,7 @@
     "unmockedModulePathPatterns": [
       "/node_modules/lodash",
       "/node_modules/validate.js"
-    ]    
+    ]
   },
   "scripts": {
     "test": "jest",

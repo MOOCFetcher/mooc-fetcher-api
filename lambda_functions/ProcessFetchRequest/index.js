@@ -9,7 +9,8 @@ exports.handler = function(event, context) {
   let errors = InputValidator.validate(event)
 
   if (errors) {
-    context.fail(errors)
+    console.log(errors)
+    context.fail('Validation failed. Invalid data.')
     return
   }
 

@@ -50,7 +50,7 @@ let renderers = {
 
 exports.format = function(inputs) {
   let templateInputs = Object.assign({}, inputs, renderers),
-    subject = `Your download request for ${inputs.course} has been received`
+    subject = `Your download request for ${inputs.coursename} has been received`
 
   let emailText = Mustache.render(template, templateInputs)
 
