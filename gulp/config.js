@@ -8,8 +8,8 @@ module.exports = {
     },
     entries: {
       ProcessFetchRequest: {},
-      UploadCourse: {},
-      UpdateCourseraOnDemandCourses: {}
+      UpdateCourseraOnDemandCourses: {},
+      ProcessTableUpdates: {}
     }
   }
 }
