@@ -6,10 +6,7 @@ import config from '../config.js'
 function uploadLambdaFunction(name) {
   return gulp.src(`${config.lambda.dest}/${name}/index.js`)
   .pipe(zip(`${name}.zip`))
-  .pipe(lambda({
-    FunctionName: name,
-    Publish: true
-  }, config.lambda.opts))
+  .pipe(lambda(name, config.lambda.opts))
   .pipe(gulp.dest(`${config.lambda.dest}`))
 }
 
