@@ -1,23 +1,24 @@
-var snsPublish = jest.genMockFn().mockImplementation(function(data, callback) {
+var sesSendEmail = jest.genMockFn().mockImplementation(function(data, callback) {
   callback(null, {})
 }),
-sesSendEmail = jest.genMockFn().mockImplementation(function(data, callback) {
+dynamodbDocPut = jest.genMockFn().mockImplementation(function(params, callback) {
   callback(null, {})
 })
-
 
 var AWS = {
   config: {
     region: ''
   },
-  SNS: function() {
-    return {
-      publish: snsPublish
-    }
-  },
   SES: function() {
     return {
       sendEmail: sesSendEmail
+    }
+  },
+  DynamoDB: {
+    DocumentClient: function() {
+      return {
+        put: dynamodbDocPut
+      }
     }
   }
 }
