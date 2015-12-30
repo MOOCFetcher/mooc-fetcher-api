@@ -1,0 +1,62 @@
+{
+   "Records" : [
+      {
+         "dynamodb" : {
+            "NewImage" : {
+               "coursename" : {
+                  "S" : "The Modern and the Postmodern Part 1"
+               },
+               "status" : {
+                  "S" : "process"
+               },
+               "email" : {
+                  "S" : "deepak.jois@gmail.com"
+               },
+               "deliverymethod" : {
+                  "S" : "dropbox"
+               },
+               "id" : {
+                  "S" : "4e0cd986-19af-4bb4-86a5-e3d9a6edc838"
+               },
+               "phone" : {
+                  "S" : "+9196591251"
+               },
+               "timestamp" : {
+                  "S" : "2015-12-29T14:06:12.343Z"
+               },
+               "mediatype" : {
+                  "L" : [
+                     {
+                        "S" : "video"
+                     },
+                     {
+                        "S" : "audio"
+                     }
+                  ]
+               },
+               "name" : {
+                  "S" : "John Doe"
+               },
+               "course" : {
+                  "S" : "modern-postmodern-1"
+               },
+               "token" : {
+                  "S" : "abcxyz123"
+               }
+            },
+            "SizeBytes" : 594,
+            "Keys" : {
+               "id" : {
+                  "S" : "4e0cd986-19af-4bb4-86a5-e3d9a6edc838"
+               },
+               "timestamp" : {
+                  "S" : "2015-12-29T14:06:12.343Z"
+               }
+            },
+            "SequenceNumber" : "3014500000000001164991287",
+            "StreamViewType" : "NEW_AND_OLD_IMAGES"
+         },
+         "eventName" : "INSERT"
+      }
+   ]
+}

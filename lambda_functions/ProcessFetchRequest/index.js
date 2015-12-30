@@ -23,9 +23,10 @@ exports.handler = function(event, context) {
     return
   }
 
-  // Add id and timestamp
+  // Add id, timestamp and status
   event.timestamp = (new Date()).toISOString()
   event.id = uuid()
+  event.status = ''
 
   // Add to DynamoDB table
   let dynamodbDoc = new AWS.DynamoDB.DocumentClient()

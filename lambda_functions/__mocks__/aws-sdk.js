@@ -3,6 +3,9 @@ var sesSendEmail = jest.genMockFn().mockImplementation(function(data, callback) 
 }),
 dynamodbDocPut = jest.genMockFn().mockImplementation(function(params, callback) {
   callback(null, {})
+}),
+dynamodbDocDelete = jest.genMockFn().mockImplementation(function(params, callback) {
+  callback(null, {})
 })
 
 var AWS = {
@@ -17,7 +20,8 @@ var AWS = {
   DynamoDB: {
     DocumentClient: function() {
       return {
-        put: dynamodbDocPut
+        put: dynamodbDocPut,
+        delete: dynamodbDocDelete
       }
     }
   }

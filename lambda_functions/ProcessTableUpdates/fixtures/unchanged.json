@@ -1,0 +1,104 @@
+{
+   "Records" : [
+      {
+         "eventName" : "MODIFY",
+         "dynamodb" : {
+            "Keys" : {
+               "timestamp" : {
+                  "S" : "2015-12-29T14:06:12.343Z"
+               },
+               "id" : {
+                  "S" : "4e0cd986-19af-4bb4-86a5-e3d9a6edc838"
+               }
+            },
+            "SizeBytes" : 594,
+            "SequenceNumber" : "3014500000000001164991287",
+            "StreamViewType" : "NEW_AND_OLD_IMAGES",
+            "OldImage" : {
+               "course" : {
+                  "S" : "modern-postmodern-1"
+               },
+               "token" : {
+                  "S" : "abcxyz123"
+               },
+               "name" : {
+                  "S" : "John Doe"
+               },
+               "deliverymethod" : {
+                  "S" : "dropbox"
+               },
+               "timestamp" : {
+                  "S" : "2015-12-29T14:06:12.343Z"
+               },
+               "id" : {
+                  "S" : "4e0cd986-19af-4bb4-86a5-e3d9a6edc838"
+               },
+               "status" : {
+                  "S" : "wait"
+               },
+               "email" : {
+                  "S" : "deepak.jois@gmail.com"
+               },
+               "coursename" : {
+                  "S" : "The Modern and the Postmodern Part 1"
+               },
+               "mediatype" : {
+                  "L" : [
+                     {
+                        "S" : "video"
+                     },
+                     {
+                        "S" : "audio"
+                     }
+                  ]
+               },
+               "phone" : {
+                  "S" : "+9196591251"
+               }
+            },
+            "NewImage" : {
+               "status" : {
+                  "S" : "wait"
+               },
+               "id" : {
+                  "S" : "4e0cd986-19af-4bb4-86a5-e3d9a6edc838"
+               },
+               "email" : {
+                  "S" : "deepak.jois@gmail.com"
+               },
+               "mediatype" : {
+                  "L" : [
+                     {
+                        "S" : "video"
+                     },
+                     {
+                        "S" : "audio"
+                     }
+                  ]
+               },
+               "coursename" : {
+                  "S" : "The Modern and the Postmodern Part 1"
+               },
+               "phone" : {
+                  "S" : "+91965912511"
+               },
+               "token" : {
+                  "S" : "abcxyz123"
+               },
+               "course" : {
+                  "S" : "modern-postmodern-1"
+               },
+               "name" : {
+                  "S" : "John Doe"
+               },
+               "timestamp" : {
+                  "S" : "2015-12-29T14:06:12.343Z"
+               },
+               "deliverymethod" : {
+                  "S" : "dropbox"
+               }
+            }
+         }
+      }
+   ]
+}
