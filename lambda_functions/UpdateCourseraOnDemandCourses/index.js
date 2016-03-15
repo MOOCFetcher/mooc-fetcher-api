@@ -66,7 +66,7 @@ exports.handler = function(event, context) {
           if (body.paging && body.paging.next) {
             loadFromCourseraPaged(callback, body.paging.next, c)
           } else {
-            callback(null, courses)
+            callback(null, c)
           }
         }
       } else {
