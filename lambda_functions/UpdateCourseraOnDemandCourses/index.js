@@ -48,22 +48,38 @@ exports.handler = function(event, context) {
     }
   }
 
-  // Loads all courses by querying the Coursera API.
-  function loadFromCoursera(callback) {
-    console.log('Fetching courses from Coursera…')
-    client.get(COURSERA_API_COURSES_PATH, function(err, res, body) {
+  function loadFromCourseraPaged(callback, next, courses) {
+    let url = COURSERA_API_COURSES_PATH
+
+    if (next) {
+      url = url + '?start=' + next
+    }
+
+    client.get(url, function(err, res, body) {
       if (!err) {
         if (res.statusCode !== 200) {
           console.log('Unexpected Status Code %s', res.statusCode)
           callback(new Error(util.format('Unexpected Status Code %s', res.statusCode)))
         } else {
-          callback(null, body.elements)
+          let c = courses.concat(body.elements)
+
+          if (body.paging && body.paging.next) {
+            loadFromCourseraPaged(callback, body.paging.next, c)
+          } else {
+            callback(null, courses)
+          }
         }
       } else {
         console.log('Error fetching courses from Coursera: %s', err)
         callback(err)
       }
     })
+  }
+
+  // Loads all courses by querying the Coursera API.
+  function loadFromCoursera(callback) {
+    console.log('Fetching courses from Coursera…')
+    loadFromCourseraPaged(callback, null, [])
   }
 
   // Loads a list of cached courses from S3, given the key.
@@ -86,15 +102,13 @@ exports.handler = function(event, context) {
     client.get(util.format(COURSERA_API_ONDEMAND_PATH, course.slug), function(err, res, body) {
       if (!err) {
         if (res.statusCode !== 200) {
-          console.log('Unexpected Status Code %s', res.statusCode)
-          callback(new Error(util.format('Unexpected Status Code %s', res.statusCode)))
-        } else {
-          if (body.elements[0].launchedAt) {
-            console.log('Adding course: %s', course.slug)
-            launched.push(course)
-          }
-          callback(null, {launched, unlaunchedUpdated})
+          console.log('Unexpected Status Code %s for course %s', res.statusCode, course.slug)
+        } else if (body.elements[0].launchedAt) {
+          console.log('Adding course: %s', course.slug)
+          launched.push(course)
         }
+
+        callback(null, {launched, unlaunchedUpdated})
       } else {
         console.log('Error fetching info for %s: %s', course.slug, err)
         callback(err)
@@ -242,6 +256,7 @@ http://coursera.org/learn/${c.slug}`).join('\n\n')
 
   // Collect the current course lists and trigger update processing.
   function processCourses(err, [courseraAll, cachedOnDemand, cachedOnDemandLaunched]) {
+    console.log('Found %d courses in all…', courseraAll.length)
     let courseraOnDemand = _.filter(courseraAll, (c) => c.courseType === 'v2.ondemand')
 
     if (err) {
