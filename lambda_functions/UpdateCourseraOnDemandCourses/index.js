@@ -98,7 +98,7 @@ exports.handler = function(event, context) {
   }
 
   // Adds a course to the list of launched courses, if `launchedAt` field is set.
-  function updateLaunchStatus({launched, unlaunchedUpdated}, course, callback) {
+  function updateLaunchStatus({launched}, course, callback) {
     client.get(util.format(COURSERA_API_ONDEMAND_PATH, course.slug), function(err, res, body) {
       if (!err) {
         if (res.statusCode !== 200) {
@@ -108,7 +108,7 @@ exports.handler = function(event, context) {
           launched.push(course)
         }
 
-        callback(null, {launched, unlaunchedUpdated})
+        callback(null, {launched})
       } else {
         console.log('Error fetching info for %s: %s', course.slug, err)
         callback(err)
@@ -145,9 +145,9 @@ exports.handler = function(event, context) {
 
     async.reduce(
       onDemandUnlaunched,
-      {launched: [], unlaunchedUpdated: []},
+      {launched: []},
       event.isMock ? updateLaunchStatusMock : updateLaunchStatus,
-      function(err, {launched, unlaunchedUpdated}) {
+      function(err, {launched}) {
         if (err) {
           console.log('Error filtering for launched courses: %s', err)
           callback(err)
@@ -155,11 +155,6 @@ exports.handler = function(event, context) {
         }
         console.log('Found %d new launched courses', launched.length)
         cachedOnDemandLaunched.push(...launched)
-        _.each(unlaunchedUpdated, (c) => {
-          var idx = _.indexOf(cachedOnDemand, _.find(cachedOnDemand, {id: c.id}))
-
-          cachedOnDemand.splice(idx, 1, c)
-        })
         callback(null, {cachedOnDemand, cachedOnDemandLaunched, newOnDemand, newLaunched: launched})
       })
   }
