@@ -9,7 +9,8 @@ module.exports = {
     entries: {
       ProcessFetchRequest: {},
       UpdateCourseraOnDemandCourses: {},
-      ProcessTableUpdates: {}
+      ProcessTableUpdates: {},
+      UpdateEdXCourses: {}
     }
   }
 }
