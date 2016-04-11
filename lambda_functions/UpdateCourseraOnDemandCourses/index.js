@@ -107,10 +107,10 @@ exports.handler = function(event, context) {
           console.log('Adding course: %s', course.slug)
           launched.push(course)
         }
-        callback(null, {launched})
       } else {
         console.log('Error fetching launch status info for %s: %s', course.slug, err)
       }
+      callback(null, {launched})
     })
   }
 
