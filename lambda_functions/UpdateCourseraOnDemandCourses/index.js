@@ -125,17 +125,17 @@ exports.handler = function(event, context) {
   // and checks if they have now been launched, and adds them to the
   // launched list.
   function updateCache({courseraOnDemand, cachedOnDemand, cachedOnDemandLaunched}, callback) {
-    let cIds = _.pluck(courseraOnDemand, 'id')
-    let odIds = _.pluck(cachedOnDemand, 'id')
+    let cIds = _.map(courseraOnDemand, 'id')
+    let odIds = _.map(cachedOnDemand, 'id')
 
     let newOnDemand = _.map(_.without(cIds, ...odIds), (id) => _.find(courseraOnDemand, {id}))
 
     console.log('Found %d new courses', newOnDemand.length)
 
     cachedOnDemand.push(...newOnDemand)
-    odIds.push(...(_.pluck(newOnDemand, 'id')))
+    odIds.push(...(_.map(newOnDemand, 'id')))
 
-    let lIds = _.pluck(cachedOnDemandLaunched, 'id')
+    let lIds = _.map(cachedOnDemandLaunched, 'id')
 
     let onDemandUnlaunched = _.map(_.without(cIds, ...lIds), (id) => _.find(cachedOnDemand, {id}))
 
