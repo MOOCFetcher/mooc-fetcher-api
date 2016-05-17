@@ -1,5 +1,5 @@
 import Mustache from 'mustache'
-let capitalize = require('lodash/string/capitalize')
+let capitalize = require('lodash/capitalize')
 
 let template = `Dear {{name}},
 
