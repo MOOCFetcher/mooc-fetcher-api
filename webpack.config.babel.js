@@ -19,6 +19,7 @@ module.exports = {
     filename: '[name]/index.js'
   },
   module: {
+    noParse: /node_modules\/json-schema\/lib\/validate\.js/,
     loaders: [{
       loader: 'babel',
       exclude: /(node_modules|bower_components)/
