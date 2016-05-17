@@ -42,7 +42,7 @@ exports.handler = function(event, context) {
         console.log('Processing %s', id)
         processed[id] = true
         break
-      case 'done':
+      case 'done': {
         let timestamp = record.dynamodb.Keys.timestamp.S
 
         console.log('Deleting completed request %s', id)
@@ -56,6 +56,7 @@ exports.handler = function(event, context) {
           cb()
         }))
         break
+      }
       default:
         processed[id] = false
         console.log('Unexpected status change to \'%s\' for %s', newStatus, id)

@@ -3,7 +3,9 @@ var config = require('./gulp/config.js')
 function buildEntries() {
   var entries = {}
 
-  Object.keys(config.lambda.entries).forEach((e) => entries[e] = `./${config.lambda.src}/${e}/index.js`)
+  Object.keys(config.lambda.entries).forEach((e) => {
+    entries[e] = `./${config.lambda.src}/${e}/index.js`
+  })
   return entries
 }
 
