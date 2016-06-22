@@ -33,6 +33,7 @@ import moment from 'moment'
 const S3_BUCKET = 'moocfetcher'
 const CACHED_ONDEMAND_LAUNCHED_KEY = 'coursera/ondemand/launched.json'
 const CACHED_ONDEMAND_KEY = 'coursera/ondemand/all.json'
+const ALL_COURSES_KEY = 'coursera/all.json'
 const COURSERA_API_COURSES_PATH = '/api/courses.v1'
 const COURSERA_API_ONDEMAND_PATH = '/api/onDemandCourses.v1?&q=slug&slug=%s'
 const client = request.createClient('https://www.coursera.org')
@@ -124,7 +125,7 @@ exports.handler = function(event, context) {
   // updates where necessary. Also iterates through any unlaunched courses
   // and checks if they have now been launched, and adds them to the
   // launched list.
-  function updateCache({courseraOnDemand, cachedOnDemand, cachedOnDemandLaunched}, callback) {
+  function updateCache({courseraAll, courseraOnDemand, cachedOnDemand, cachedOnDemandLaunched}, callback) {
     let cIds = _.map(courseraOnDemand, 'id')
     let odIds = _.map(cachedOnDemand, 'id')
 
@@ -153,8 +154,29 @@ exports.handler = function(event, context) {
         }
         console.log('Found %d new launched courses', launched.length)
         cachedOnDemandLaunched.push(...launched)
-        callback(null, {cachedOnDemand, cachedOnDemandLaunched, newOnDemand, newLaunched: launched})
+        callback(null, {courseraAll, cachedOnDemand, cachedOnDemandLaunched, newOnDemand, newLaunched: launched})
       })
+  }
+
+  // Test function to save all courses to a JSON file, and pass the arguments through.
+  function saveAllCoursesToFile(res, callback) {
+    console.log('Saving all courses data…')
+    fs.writeFileSync('fixtures/all.json', JSON.stringify({courses: res.courseraAll}, 2, 2))
+    callback(null, res)
+  }
+
+  // Test function to save all courses to an S3 file, and pass the arguments through.
+  function saveAllCoursesToS3(res, callback) {
+    async.series([
+      (cb) => s3Client.copyObject({Bucket: S3_BUCKET, CopySource: util.format('%s/%s', S3_BUCKET, ALL_COURSES_KEY), Key: util.format('%s-%s.json', ALL_COURSES_KEY.slice(0, -5), moment().format('DD-MM-YYYY-HHMM'))}, cb),
+      (cb) => s3Client.putObject({Bucket: S3_BUCKET, Key: ALL_COURSES_KEY, Body: JSON.stringify({courses: res.courseraAll})}, cb)
+    ], function(err) {
+      if (err) {
+        callback(err)
+      } else {
+        callback(null, res)
+      }
+    })
   }
 
   // Test function to save courses to a JSON file.
@@ -249,15 +271,16 @@ http://coursera.org/learn/${c.slug}`).join('\n\n')
 
   // Collect the current course lists and trigger update processing.
   function processCourses(err, [courseraAll, cachedOnDemand, cachedOnDemandLaunched]) {
-    console.log('Found %d courses in all…', courseraAll.length)
-    let courseraOnDemand = _.filter(courseraAll, (c) => c.courseType === 'v2.ondemand')
-
     if (err) {
       console.log('Failed due to error: %s', err)
       context.fail(err)
     } else {
+      console.log('Found %d courses in all…', courseraAll.length)
+      let courseraOnDemand = _.filter(courseraAll, (c) => c.courseType === 'v2.ondemand')
+
       async.waterfall([
-        async.apply(updateCache, {courseraOnDemand, cachedOnDemand, cachedOnDemandLaunched}),
+        async.apply(updateCache, {courseraAll, courseraOnDemand, cachedOnDemand, cachedOnDemandLaunched}),
+        event.isMock ? saveAllCoursesToFile : saveAllCoursesToS3,
         event.isMock ? saveUpdatedCoursesToFile : saveUpdatedCoursesToS3
       ], updateContext)
     }
