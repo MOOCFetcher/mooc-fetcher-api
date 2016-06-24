@@ -104,9 +104,19 @@ exports.handler = function(event, context) {
       if (!err) {
         if (res.statusCode !== 200) {
           console.log('Unexpected Status Code %s for course %s', res.statusCode, course.slug)
-        } else if (body.elements[0].launchedAt) {
-          console.log('Adding course: %s', course.slug)
-          launched.push(course)
+        } else {
+          // Add language information
+          let primaryLanguageCodes = body.elements[0].primaryLanguageCodes
+
+          if (primaryLanguageCodes) {
+            course.primaryLanguageCodes = primaryLanguageCodes
+          }
+
+          // Check launch status
+          if (body.elements[0].launchedAt) {
+            console.log('Adding course: %s', course.slug)
+            launched.push(course)
+          }
         }
       } else {
         console.log('Error fetching launch status info for %s: %s', course.slug, err)
