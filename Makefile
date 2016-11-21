@@ -1,4 +1,4 @@
-.PHONY: run dist upload
+.PHONY: run dist upload lint
 
 dist:
 	rm -rf dist
@@ -9,4 +9,5 @@ dist:
 upload: dist
 	aws lambda update-function-code --function-name UpdateCourseraOnDemandCourses --publish --zip-file fileb://dist/UpdateCourseraOnDemandCourses.zip
 
-
+lint:
+	node_modules/.bin/eslint --fix .
