@@ -1,64 +1,26 @@
 {
-  "repository": {
-    "url": "https://github.com/MOOCFetcher/mooc-fetcher-api.git",
-    "type": "git"
-  },
-  "author": "Deepak Jois",
-  "main": "index.js",
-  "license": "UNLICENSED",
-  "devDependencies": {
-    "async": "^1.5.2",
-    "aws-sdk": "^2.4.2",
-    "babel-core": "^6.10.4",
-    "babel-eslint": "^6.1.0",
-    "babel-jest": "^12.0.2",
-    "babel-loader": "^6.2.4",
-    "babel-plugin-transform-object-assign": "^6.8.0",
-    "babel-preset-es2015": "^6.9.0",
-    "babel-preset-stage-0": "^6.5.0",
-    "eslint": "^2.13.1",
-    "eslint-plugin-babel": "^3.3.0",
-    "gulp": "^3.9.1",
-    "gulp-awslambda": "^0.4.0",
-    "gulp-util": "^3.0.7",
-    "gulp-zip": "^3.2.0",
-    "jest-cli": "^12.0.2",
-    "json-loader": "^0.5.4",
-    "lodash": "^4.13.1",
-    "moment": "^2.13.0",
-    "mustache": "^2.2.1",
-    "request-json": "^0.5.6",
-    "require-dir": "^0.3.0",
-    "validate.js": "^0.10.0",
-    "webpack": "^1.13.1"
-  },
-  "jest": {
-    "testRunner": "<rootDir>/node_modules/jest-cli/src/testRunners/jasmine/jasmine2.js",
-    "verbose": true,
-    "noHighlight": true,
-    "scriptPreprocessor": "node_modules/babel-jest",
-    "testPathDirs": [
-      "<rootDir>/lambda_functions"
-    ],
-    "testFileExtensions": [
-      "es6",
-      "js"
-    ],
-    "moduleFileExtensions": [
-      "es6",
-      "js",
-      "json"
-    ],
-    "unmockedModulePathPatterns": [
-      "/node_modules/lodash",
-      "/node_modules/validate.js"
-    ]
-  },
-  "scripts": {
-    "test": "jest",
-    "lint": "eslint --fix ."
-  },
+  "name": "moocfetcher-api",
   "version": "0.0.1",
-  "name": "mooc-fetcher-api",
-  "description": "Web API backend for MOOC Fetcher"
+  "description": "Web API backend for MOOC Fetcher",
+  "repository": "https://github.com/MOOCFetcher/moocfetcher-api.git",
+  "author": "Deepak Jois <deepak.jois@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "async": "1.5.2",
+    "aws-sdk": "^2.7.5",
+    "lodash": "^4.17.2",
+    "moment": "^2.16.0",
+    "request-json": "^0.6.1"
+  },
+  "devDependencies": {
+    "babel": "^6.5.2",
+    "babel-cli": "^6.18.0",
+    "babel-core": "^6.18.2",
+    "babel-eslint": "^7.1.1",
+    "babel-loader": "^6.2.8",
+    "babel-preset-es2015": "^6.18.0",
+    "eslint": "^3.10.2",
+    "json-loader": "^0.5.4",
+    "webpack": "^1.13.3"
+  }
 }

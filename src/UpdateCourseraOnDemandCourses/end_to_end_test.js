@@ -1,7 +1,8 @@
 import index from './index'
 import util from 'util'
 
-var context, event
+
+let event = null
 
 if (process.argv[process.argv.length - 1] === 'mock') {
   event = {isMock: true}
@@ -9,14 +10,15 @@ if (process.argv[process.argv.length - 1] === 'mock') {
   event = {}
 }
 
-context = {
-  fail: function(error) {
+const context = {
+  fail (error) {
     console.log('Failed:', error)
     process.exit(1)
   },
-  succeed: function(result) {
+  succeed (result) {
     console.log('Succeeded:', util.inspect(result, {depth: 5}))
     process.exit()
   }
 }
+
 index.handler(event, context)

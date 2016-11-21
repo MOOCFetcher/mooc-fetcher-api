@@ -23,12 +23,12 @@
  */
 
 import AWS from 'aws-sdk'
-import request from 'request-json'
 import _ from 'lodash'
 import async from 'async'
 import fs from 'fs'
-import util from 'util'
 import moment from 'moment'
+import request from 'request-json'
+import util from 'util'
 
 const S3_BUCKET = 'moocfetcher'
 const CACHED_ONDEMAND_LAUNCHED_KEY = 'coursera/ondemand/launched.json'
@@ -40,29 +40,29 @@ const client = request.createClient('https://www.coursera.org')
 const s3Client = new AWS.S3()
 const sesClient = new AWS.SES({region: 'us-east-1'})
 
-exports.handler = function(event, context) {
+function handler (event, context) {
   // Test function to load courses from a JSON file.
-  function loadCoursesFromFile(f) {
-    return function(callback) {
+  function loadCoursesFromFile (f) {
+    return function (callback) {
       console.log('Fetching courses from file %s…', f)
       callback(null, JSON.parse(fs.readFileSync(f)).courses)
     }
   }
 
-  function loadFromCourseraPaged(callback, next, courses) {
+  function loadFromCourseraPaged (callback, next, courses) {
     let url = COURSERA_API_COURSES_PATH
 
     if (next) {
-      url = url + '?start=' + next
+      url = `${url}?start=${next}`
     }
 
-    client.get(url, function(err, res, body) {
+    client.get(url, (err, res, body) => {
       if (!err) {
         if (res.statusCode !== 200) {
           console.log('Unexpected Status Code %s', res.statusCode)
           callback(new Error(util.format('Unexpected Status Code %s', res.statusCode)))
         } else {
-          let c = courses.concat(body.elements)
+          const c = courses.concat(body.elements)
 
           if (body.paging && body.paging.next) {
             loadFromCourseraPaged(callback, body.paging.next, c)
@@ -78,16 +78,16 @@ exports.handler = function(event, context) {
   }
 
   // Loads all courses by querying the Coursera API.
-  function loadFromCoursera(callback) {
+  function loadFromCoursera (callback) {
     console.log('Fetching courses from Coursera…')
     loadFromCourseraPaged(callback, null, [])
   }
 
   // Loads a list of cached courses from S3, given the key.
-  function loadCoursesFromS3(key) {
-    return function(callback) {
+  function loadCoursesFromS3 (key) {
+    return function (callback) {
       console.log('Fetching courses from S3 key: %s', key)
-      s3Client.getObject({Bucket: S3_BUCKET, Key: key}, function(err, data) {
+      s3Client.getObject({Bucket: S3_BUCKET, Key: key}, (err, data) => {
         if (!err) {
           callback(null, JSON.parse(data.Body).courses)
         } else {
@@ -99,14 +99,14 @@ exports.handler = function(event, context) {
   }
 
   // Adds a course to the list of launched courses, if `launchedAt` field is set.
-  function updateLaunchStatus({launched}, course, callback) {
-    client.get(util.format(COURSERA_API_ONDEMAND_PATH, course.slug), function(err, res, body) {
+  function updateLaunchStatus ({launched}, course, callback) {
+    client.get(util.format(COURSERA_API_ONDEMAND_PATH, course.slug), (err, res, body) => {
       if (!err) {
         if (res.statusCode !== 200) {
           console.log('Unexpected Status Code %s for course %s', res.statusCode, course.slug)
         } else {
           // Add language information
-          let primaryLanguageCodes = body.elements[0].primaryLanguageCodes
+          const primaryLanguageCodes = body.elements[0].primaryLanguageCodes
 
           if (primaryLanguageCodes) {
             course.primaryLanguageCodes = primaryLanguageCodes
@@ -126,7 +126,7 @@ exports.handler = function(event, context) {
   }
 
   // Mock function that does nothing. (Used instead of `updateLaunchStatus`)
-  function updateLaunchStatusMock(newLaunchedCourses, course, callback) {
+  function updateLaunchStatusMock (newLaunchedCourses, course, callback) {
     // console.log('Checking course: %s', course.slug)
     callback(null, newLaunchedCourses)
   }
@@ -135,20 +135,20 @@ exports.handler = function(event, context) {
   // updates where necessary. Also iterates through any unlaunched courses
   // and checks if they have now been launched, and adds them to the
   // launched list.
-  function updateCache({courseraAll, courseraOnDemand, cachedOnDemand, cachedOnDemandLaunched}, callback) {
-    let cIds = _.map(courseraOnDemand, 'id')
-    let odIds = _.map(cachedOnDemand, 'id')
+  function updateCache ({courseraAll, courseraOnDemand, cachedOnDemand, cachedOnDemandLaunched}, callback) {
+    const cIds = _.map(courseraOnDemand, 'id')
+    const odIds = _.map(cachedOnDemand, 'id')
 
-    let newOnDemand = _.map(_.without(cIds, ...odIds), (id) => _.find(courseraOnDemand, {id}))
+    const newOnDemand = _.map(_.without(cIds, ...odIds), (id) => _.find(courseraOnDemand, {id}))
 
     console.log('Found %d new courses', newOnDemand.length)
 
     cachedOnDemand.push(...newOnDemand)
     odIds.push(...(_.map(newOnDemand, 'id')))
 
-    let lIds = _.map(cachedOnDemandLaunched, 'id')
+    const lIds = _.map(cachedOnDemandLaunched, 'id')
 
-    let onDemandUnlaunched = _.map(_.without(cIds, ...lIds), (id) => _.find(cachedOnDemand, {id}))
+    const onDemandUnlaunched = _.map(_.without(cIds, ...lIds), (id) => _.find(cachedOnDemand, {id}))
 
     console.log('Checking launch status for %d courses', onDemandUnlaunched.length)
 
@@ -156,10 +156,11 @@ exports.handler = function(event, context) {
       onDemandUnlaunched,
       {launched: []},
       event.isMock ? updateLaunchStatusMock : updateLaunchStatus,
-      function(err, {launched}) {
+      (err, {launched}) => {
         if (err) {
           console.log('Error filtering for launched courses: %s', err)
           callback(err)
+
           return
         }
         console.log('Found %d new launched courses', launched.length)
@@ -169,18 +170,18 @@ exports.handler = function(event, context) {
   }
 
   // Test function to save all courses to a JSON file, and pass the arguments through.
-  function saveAllCoursesToFile(res, callback) {
+  function saveAllCoursesToFile (res, callback) {
     console.log('Saving all courses data…')
     fs.writeFileSync('fixtures/all.json', JSON.stringify({courses: res.courseraAll}, 2, 2))
     callback(null, res)
   }
 
   // Test function to save all courses to an S3 file, and pass the arguments through.
-  function saveAllCoursesToS3(res, callback) {
+  function saveAllCoursesToS3 (res, callback) {
     async.series([
       (cb) => s3Client.copyObject({Bucket: S3_BUCKET, CopySource: util.format('%s/%s', S3_BUCKET, ALL_COURSES_KEY), Key: util.format('%s-%s.json', ALL_COURSES_KEY.slice(0, -5), moment().format('DD-MM-YYYY-HHMM'))}, cb),
       (cb) => s3Client.putObject({Bucket: S3_BUCKET, Key: ALL_COURSES_KEY, Body: JSON.stringify({courses: res.courseraAll})}, cb)
-    ], function(err) {
+    ], (err) => {
       if (err) {
         callback(err)
       } else {
@@ -190,7 +191,7 @@ exports.handler = function(event, context) {
   }
 
   // Test function to save courses to a JSON file.
-  function saveUpdatedCoursesToFile({cachedOnDemand, cachedOnDemandLaunched, newOnDemand, newLaunched}, callback) {
+  function saveUpdatedCoursesToFile ({cachedOnDemand, cachedOnDemandLaunched, newOnDemand, newLaunched}, callback) {
     console.log('Saving new data…')
     fs.writeFileSync('fixtures/all_ondemand_new.json', JSON.stringify({courses: cachedOnDemand}, 2, 2))
     fs.writeFileSync('fixtures/launched_new.json', JSON.stringify({courses: cachedOnDemandLaunched}, 2, 2))
@@ -198,13 +199,13 @@ exports.handler = function(event, context) {
   }
 
   // Update cached lists of On Demand Courses, after making a copy of them.
-  function saveUpdatedCoursesToS3({cachedOnDemand, cachedOnDemandLaunched, newOnDemand, newLaunched}, callback) {
+  function saveUpdatedCoursesToS3 ({cachedOnDemand, cachedOnDemandLaunched, newOnDemand, newLaunched}, callback) {
     async.series([
       (cb) => s3Client.copyObject({Bucket: S3_BUCKET, CopySource: util.format('%s/%s', S3_BUCKET, CACHED_ONDEMAND_KEY), Key: util.format('%s-%s.json', CACHED_ONDEMAND_KEY.slice(0, -5), moment().format('DD-MM-YYYY-HHMM'))}, cb),
       (cb) => s3Client.copyObject({Bucket: S3_BUCKET, CopySource: util.format('%s/%s', S3_BUCKET, CACHED_ONDEMAND_LAUNCHED_KEY), Key: util.format('%s-%s.json', CACHED_ONDEMAND_LAUNCHED_KEY.slice(0, -5), moment().format('DD-MM-YYYY-HHMM'))}, cb),
       (cb) => s3Client.putObject({Bucket: S3_BUCKET, Key: CACHED_ONDEMAND_KEY, Body: JSON.stringify({courses: cachedOnDemand})}, cb),
       (cb) => s3Client.putObject({Bucket: S3_BUCKET, Key: CACHED_ONDEMAND_LAUNCHED_KEY, Body: JSON.stringify({courses: cachedOnDemandLaunched})}, cb)
-    ], function(err, result) {
+    ], (err, result) => {
       if (err) {
         callback(err)
       } else {
@@ -214,12 +215,12 @@ exports.handler = function(event, context) {
   }
 
   // Prepares a notification email to send via SES
-  function prepNotificationEmail({newOnDemand, newLaunched}) {
-    let newOnDemandTxt = _.map(newOnDemand, (c) => `${c.name}
+  function prepNotificationEmail ({newOnDemand, newLaunched}) {
+    const newOnDemandTxt = _.map(newOnDemand, (c) => `${c.name}
 http://coursera.org/learn/${c.slug}`).join('\n\n')
-    let newLaunchedTxt = _.map(newLaunched, (c) => `${c.name}
+    const newLaunchedTxt = _.map(newLaunched, (c) => `${c.name}
 http://coursera.org/learn/${c.slug}`).join('\n\n')
-    let body = ['New On-Demand Courses added:\n',
+    const body = ['New On-Demand Courses added:\n',
       newOnDemandTxt || 'None',
       '\n',
       'New On-Demand Courses launched:\n',
@@ -227,33 +228,32 @@ http://coursera.org/learn/${c.slug}`).join('\n\n')
     ].join('\n')
 
     return {
-        Destination: {
-          ToAddresses: ['d@moocfetcher.com']
-        },
-        Message: {
-          Body: {
-            Text: {
-              Data: body,
-              Charset: 'utf-8'
-            }
-          },
-          Subject: {
-            Data: 'Coursera Update',
+      Destination: {ToAddresses: ['d@moocfetcher.com']},
+      Message: {
+        Body: {
+          Text: {
+            Data: body,
             Charset: 'utf-8'
           }
         },
-        Source: 'MOOCFetcher <contact@moocfetcher.com>'
-      }
+        Subject: {
+          Data: 'Coursera Update',
+          Charset: 'utf-8'
+        }
+      },
+      Source: 'MOOCFetcher <contact@moocfetcher.com>'
+    }
   }
 
   // Send a notification email containing newly added and launched courses
-  function sendNotificationEmail({newOnDemand, newLaunched}, cb) {
+  function sendNotificationEmail ({newOnDemand, newLaunched}, cb) {
     if ((newOnDemand.length === 0) && (newLaunched.length === 0)) {
       cb()
+
       return
     }
 
-    let params = prepNotificationEmail({newOnDemand, newLaunched})
+    const params = prepNotificationEmail({newOnDemand, newLaunched})
 
     if (event.isMock) {
       console.log('Email:\n%s', params.Message.Body.Text.Data)
@@ -269,7 +269,7 @@ http://coursera.org/learn/${c.slug}`).join('\n\n')
   }
 
   // Updates AWS Lambda context after checking the final results.
-  function updateContext(err, result) {
+  function updateContext (err, result) {
     if (err) {
       context.fail(err)
     } else {
@@ -280,13 +280,13 @@ http://coursera.org/learn/${c.slug}`).join('\n\n')
   }
 
   // Collect the current course lists and trigger update processing.
-  function processCourses(err, [courseraAll, cachedOnDemand, cachedOnDemandLaunched]) {
+  function processCourses (err, [courseraAll, cachedOnDemand, cachedOnDemandLaunched]) {
     if (err) {
       console.log('Failed due to error: %s', err)
       context.fail(err)
     } else {
       console.log('Found %d courses in all…', courseraAll.length)
-      let courseraOnDemand = _.filter(courseraAll, (c) => c.courseType === 'v2.ondemand')
+      const courseraOnDemand = _.filter(courseraAll, (c) => c.courseType === 'v2.ondemand')
 
       async.waterfall([
         async.apply(updateCache, {courseraAll, courseraOnDemand, cachedOnDemand, cachedOnDemandLaunched}),
@@ -309,3 +309,5 @@ http://coursera.org/learn/${c.slug}`).join('\n\n')
     ],
     processCourses)
 }
+
+export {handler}
